@@ -13,13 +13,28 @@ Welcome to [Horizon](https://github.com/thysrael/Horizon), an AI-driven informat
 - [Source Scrapers](scrapers) — How Horizon collects content from GitHub, Hacker News, RSS, and Reddit
 - [Scoring System](scoring) — AI-based content analysis and the 0-10 scoring scale
 
-## Latest Summaries
+## 中文速递
 
 <ul>
-  {% for post in site.posts limit:20 %}
+  {% assign zh_posts = site.posts | where: "lang", "zh" %}
+  {% for post in zh_posts limit:20 %}
     <li>
-      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      <small style="color: #666;">- {{ post.date | date: "%Y-%m-%d" }}</small>
+      <a href="{{ post.url | relative_url }}">{{ post.date | date: "%Y-%m-%d" }} 速递</a>
     </li>
+  {% else %}
+    <li><em>暂无内容</em></li>
+  {% endfor %}
+</ul>
+
+## English Digest
+
+<ul>
+  {% assign en_posts = site.posts | where: "lang", "en" %}
+  {% for post in en_posts limit:20 %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.date | date: "%Y-%m-%d" }}</a>
+    </li>
+  {% else %}
+    <li><em>No posts yet</em></li>
   {% endfor %}
 </ul>
