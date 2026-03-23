@@ -1,27 +1,30 @@
 /* ===== Horizon Custom Styles ===== */
 
-/* --- CSS Variables & Dark Mode (Nord) --- */
+/* --- CSS Variables & Dark Mode (Horizon Dawn) --- */
+/* Palette derived from horizon-header.svg sunrise:
+   #312e81 deep indigo · #be185d rose · #f97316 orange · #fbbf24 gold
+   #4c1d95 mountain purple · #701a75 distant purple                  */
 :root {
-  --hz-bg: #eceff4;          /* nord6 — Snow Storm light */
-  --hz-surface: #e5e9f0;     /* nord5 */
-  --hz-border: #d8dee9;      /* nord4 */
-  --hz-text: #2e3440;        /* nord0 — Polar Night */
-  --hz-text-muted: #4c566a;  /* nord3 */
-  --hz-link: #5e81ac;        /* nord10 — blue */
-  --hz-code-bg: #e5e9f0;     /* nord5 */
-  --hz-accent: #d08770;      /* nord12 — Aurora orange */
+  --hz-bg: #faf8f5;          /* warm parchment white */
+  --hz-surface: #f3f0eb;     /* slightly warm gray */
+  --hz-border: #e0dbd3;      /* warm border */
+  --hz-text: #2d2a3e;        /* deep indigo-ink */
+  --hz-text-muted: #7c7891;  /* muted lavender gray */
+  --hz-link: #6d4aaa;        /* mountain purple, lighter */
+  --hz-code-bg: #f0ede7;     /* warm code bg */
+  --hz-accent: #e0652e;      /* sunrise orange, toned down */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --hz-bg: #2e3440;        /* nord0 — Polar Night */
-    --hz-surface: #3b4252;   /* nord1 */
-    --hz-border: #434c5e;    /* nord2 */
-    --hz-text: #eceff4;      /* nord6 — Snow Storm */
-    --hz-text-muted: #d8dee9; /* nord4 */
-    --hz-link: #88c0d0;      /* nord8 — Frost cyan */
-    --hz-code-bg: #3b4252;   /* nord1 */
-    --hz-accent: #d08770;    /* nord12 — Aurora orange */
+    --hz-bg: #1a1726;        /* pre-dawn deep purple-black */
+    --hz-surface: #231f33;   /* night sky surface */
+    --hz-border: #342f4a;    /* indigo border */
+    --hz-text: #e8e4f0;      /* moonlight white-lavender */
+    --hz-text-muted: #8c86a0; /* muted twilight */
+    --hz-link: #f0a848;      /* dawn gold */
+    --hz-code-bg: #211d30;   /* deep code bg */
+    --hz-accent: #e87040;    /* sunrise orange-coral */
   }
 }
 
@@ -54,9 +57,9 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--hz-text) !important;
 }
 
-/* Override Cayman header gradient — Nord Polar Night */
+/* Override Cayman header gradient — Horizon sunrise from SVG */
 .page-header {
-  background: linear-gradient(120deg, #2e3440, #434c5e) !important;
+  background: linear-gradient(120deg, #312e81, #be185d, #f97316) !important;
 }
 
 /* --- Score Badge --- */
@@ -72,10 +75,10 @@ h1, h2, h3, h4, h5, h6 {
   vertical-align: middle;
 }
 
-.score-badge[data-tier="high"] { background: #bf616a; } /* nord11 — red */
-.score-badge[data-tier="good"] { background: #d08770; } /* nord12 — orange */
-.score-badge[data-tier="mid"]  { background: #ebcb8b; } /* nord13 — yellow */
-.score-badge[data-tier="low"]  { background: #4c566a; } /* nord3 — gray */
+.score-badge[data-tier="high"] { background: #be185d; } /* rose — from SVG */
+.score-badge[data-tier="good"] { background: #e0652e; } /* sunrise orange */
+.score-badge[data-tier="mid"]  { background: #d4a017; } /* warm gold */
+.score-badge[data-tier="low"]  { background: #7c7891; } /* muted lavender */
 
 /* --- Tag Pills --- */
 .tag-line code {
@@ -88,8 +91,8 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (prefers-color-scheme: dark) {
   .tag-line code {
-    background: #434c5e !important;   /* nord2 */
-    color: #ebcb8b !important;        /* nord13 — yellow */
+    background: #342f4a !important;   /* indigo border */
+    color: #f0a848 !important;        /* dawn gold */
   }
 }
 
