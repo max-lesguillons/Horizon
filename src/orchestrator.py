@@ -180,6 +180,67 @@ class HorizonOrchestrator:
             self.console.print(f"[bold red]❌ Error: {e}[/bold red]")
             raise
 
+    async def run_pipeline(
+        self,
+        scoring_prompt: str = None,
+        force_hours: int = None,
+        max_items: int = None,
+    ) -> tuple[List[ContentItem], int]:
+        """Run the pipeline and return scored/enriched items.
+
+        Args:
+            scoring_prompt: Optional custom scoring system prompt
+            force_hours: Optional override for time window
+            max_items: Optional cap on returned items
+
+        Returns:
+            Tuple of (enriched items sorted by score, total items fetched)
+        """
+        self.console.print("[bold cyan]🌅 Horizon - Starting aggregation...[/bold cyan]\n")
+
+        since = self._determine_time_window(force_hours)
+        self.console.print(f"📅 Fetching content since: {since.strftime('%Y-%m-%d %H:%M:%S')}\n")
+
+        all_items = await self.fetch_all_sources(since)
+        self.console.print(f"📥 Fetched {len(all_items)} items from all sources\n")
+
+        if not all_items:
+            self.console.print("[yellow]No new content found.[/yellow]")
+            return [], 0
+
+        merged_items = self.merge_cross_source_duplicates(all_items)
+        if len(merged_items) < len(all_items):
+            self.console.print(
+                f"🔗 Merged {len(all_items) - len(merged_items)} cross-source duplicates "
+                f"→ {len(merged_items)} unique items\n"
+            )
+
+        analyzed_items = await self._analyze_content(merged_items, scoring_prompt=scoring_prompt)
+        self.console.print(f"🤖 Analyzed {len(analyzed_items)} items with AI\n")
+
+        threshold = self.config.filtering.ai_score_threshold
+        important_items = [
+            item for item in analyzed_items
+            if item.ai_score and item.ai_score >= threshold
+        ]
+        important_items.sort(key=lambda x: x.ai_score or 0, reverse=True)
+        self.console.print(f"⭐️ {len(important_items)} items scored ≥ {threshold}\n")
+
+        deduped_items = await self.merge_topic_duplicates(important_items)
+        if len(deduped_items) < len(important_items):
+            self.console.print(
+                f"🧹 Removed {len(important_items) - len(deduped_items)} topic duplicates "
+                f"→ {len(deduped_items)} unique items\n"
+            )
+        important_items = deduped_items
+
+        if max_items and len(important_items) > max_items:
+            important_items = important_items[:max_items]
+
+        await self._enrich_important_items(important_items)
+
+        return important_items, len(all_items)
+
     def _determine_time_window(self, force_hours: int = None) -> datetime:
         if force_hours:
             since = datetime.now(timezone.utc) - timedelta(hours=force_hours)
@@ -427,11 +488,16 @@ class HorizonOrchestrator:
         await enricher.enrich_batch(items)
         self.console.print(f"   Enriched {len(items)} items\n")
 
-    async def _analyze_content(self, items: List[ContentItem]) -> List[ContentItem]:
+    async def _analyze_content(
+        self,
+        items: List[ContentItem],
+        scoring_prompt: str = None,
+    ) -> List[ContentItem]:
         """Analyze content items with AI.
 
         Args:
             items: Items to analyze
+            scoring_prompt: Optional custom scoring system prompt
 
         Returns:
             List[ContentItem]: Analyzed items
@@ -439,7 +505,7 @@ class HorizonOrchestrator:
         self.console.print("🤖 Analyzing content with AI...")
 
         ai_client = create_ai_client(self.config.ai)
-        analyzer = ContentAnalyzer(ai_client)
+        analyzer = ContentAnalyzer(ai_client, scoring_prompt=scoring_prompt)
 
         return await analyzer.analyze_batch(items)
 

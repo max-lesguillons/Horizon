@@ -15,8 +15,9 @@ from ..models import ContentItem
 class ContentAnalyzer:
     """Analyzes content items using AI to determine importance."""
 
-    def __init__(self, ai_client: AIClient):
+    def __init__(self, ai_client: AIClient, scoring_prompt: str = None):
         self.client = ai_client
+        self.scoring_prompt = scoring_prompt
 
     @staticmethod
     def _parse_json_response(response: str) -> Optional[dict]:
@@ -123,8 +124,9 @@ class ContentAnalyzer:
         )
 
         # Get AI completion
+        system_prompt = self.scoring_prompt or CONTENT_ANALYSIS_SYSTEM
         response = await self.client.complete(
-            system=CONTENT_ANALYSIS_SYSTEM,
+            system=system_prompt,
             user=user_prompt,
             temperature=0.3
         )

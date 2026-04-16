@@ -1,0 +1,105 @@
+{
+  "channel_name": "bess-daily",
+  "description": "Battery Energy Storage Systems — grid-scale projects, regulation, technology",
+  "discord_webhook_url_env": "DISCORD_WEBHOOK_BESS",
+
+  "ai": {
+    "provider": "gemini",
+    "model": "gemini-2.0-flash",
+    "api_key_env": "GEMINI_API_KEY",
+    "languages": ["en"]
+  },
+
+  "scoring_prompt": "You are an expert analyst in the Battery Energy Storage Systems (BESS) industry. Rate each news item 0-10 based on:\n- Regulatory impact (EU Battery Passport, grid codes, IRA/ITC incentives): weight 3x\n- Market signals (GWh-scale procurement, financing rounds, M&A, partnerships): weight 2x\n- Technology advances (LFP, sodium-ion, flow batteries, LDES, BMS innovation): weight 2x\n- APAC relevance (China manufacturers, Australia/Japan/SEA deployments, HK market): weight 1.5x\n- Supply chain dynamics (CATL, BYD, Sungrow, Fluence, Wärtsilä moves): weight 1x\n\nIgnore residential/consumer battery news. Focus on utility-scale and C&I storage.\n\nScore content on a 0-10 scale. Consider the weighted criteria above when assigning scores:\n\n9-10: Major regulatory shifts, GWh+ deals, breakthrough technology\n7-8: Significant project announcements, policy updates, notable partnerships\n5-6: Incremental updates, regional project news\n3-4: Minor updates, tangentially related content\n0-2: Off-topic or consumer/residential battery news",
+
+  "sources": {
+    "rss": [
+      {
+        "name": "Energy Storage News",
+        "url": "https://www.energy-storage.news/feed/",
+        "enabled": true
+      },
+      {
+        "name": "ESS News (pv magazine storage)",
+        "url": "https://www.ess-news.com/feed/",
+        "enabled": true
+      },
+      {
+        "name": "Utility Dive - Storage",
+        "url": "https://www.utilitydive.com/topic/storage/feed/",
+        "enabled": true
+      },
+      {
+        "name": "CleanTechnica",
+        "url": "https://cleantechnica.com/feed/",
+        "enabled": true
+      },
+      {
+        "name": "RenewEconomy (Australia)",
+        "url": "https://reneweconomy.com.au/feed/",
+        "enabled": true
+      },
+      {
+        "name": "reNews - Energy Storage",
+        "url": "https://renews.biz/energy-storage/feed/",
+        "enabled": true
+      },
+      {
+        "name": "Energy Storage Journal",
+        "url": "https://energystoragejournal.com/feed/",
+        "enabled": true
+      },
+      {
+        "name": "Energy Global - Storage",
+        "url": "https://www.energyglobal.com/rss/energyglobal/",
+        "enabled": true
+      },
+      {
+        "name": "BEST Magazine",
+        "url": "https://www.bestmag.co.uk/feed/",
+        "enabled": true
+      },
+      {
+        "name": "IEA News",
+        "url": "https://www.iea.org/news/feed/",
+        "enabled": true
+      },
+      {
+        "name": "Circularise Blog",
+        "url": "https://www.circularise.com/blogs/rss.xml",
+        "enabled": true
+      }
+    ],
+
+    "reddit": {
+      "enabled": true,
+      "subreddits": [
+        { "subreddit": "energy", "sort": "hot", "fetch_limit": 20, "min_score": 5 },
+        { "subreddit": "energystorage", "sort": "hot", "fetch_limit": 15, "min_score": 3 },
+        { "subreddit": "batteries", "sort": "hot", "fetch_limit": 15, "min_score": 3 }
+      ],
+      "fetch_comments": 3
+    },
+
+    "github": [
+      { "type": "repo_releases", "owner": "pybamm-team", "repo": "PyBaMM", "enabled": true },
+      { "type": "repo_releases", "owner": "OpenEMS", "repo": "openems", "enabled": true }
+    ],
+
+    "hackernews": {
+      "enabled": false
+    }
+  },
+
+  "filtering": {
+    "ai_score_threshold": 6.5,
+    "time_window_hours": 24,
+    "max_items": 15
+  },
+
+  "output": {
+    "format": "discord",
+    "include_enrichment": true,
+    "enrich_threshold": 8.0
+  }
+}

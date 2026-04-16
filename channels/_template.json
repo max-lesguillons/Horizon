@@ -1,0 +1,48 @@
+{
+  "channel_name": "TOPIC-daily",
+  "description": "Short description of the topic focus",
+  "discord_webhook_url_env": "DISCORD_WEBHOOK_TOPIC",
+
+  "ai": {
+    "provider": "gemini",
+    "model": "gemini-2.0-flash",
+    "api_key_env": "GEMINI_API_KEY",
+    "languages": ["en"]
+  },
+
+  "scoring_prompt": "You are an expert in TOPIC. Rate each news item 0-10 based on:\n- Criterion 1: weight Nx\n- Criterion 2: weight Nx\n\nScore guidance:\n9-10: Groundbreaking\n7-8: High value\n5-6: Interesting\n3-4: Low priority\n0-2: Noise",
+
+  "sources": {
+    "rss": [
+      {
+        "name": "Example Feed",
+        "url": "https://example.com/feed/",
+        "enabled": true
+      }
+    ],
+
+    "reddit": {
+      "enabled": false,
+      "subreddits": [],
+      "fetch_comments": 3
+    },
+
+    "github": [],
+
+    "hackernews": {
+      "enabled": false
+    }
+  },
+
+  "filtering": {
+    "ai_score_threshold": 6.5,
+    "time_window_hours": 24,
+    "max_items": 15
+  },
+
+  "output": {
+    "format": "discord",
+    "include_enrichment": true,
+    "enrich_threshold": 8.0
+  }
+}
