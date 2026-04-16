@@ -26,7 +26,7 @@
       },
       {
         "name": "Utility Dive - Storage",
-        "url": "https://www.utilitydive.com/topic/storage/feed/",
+        "url": "https://www.utilitydive.com/feeds/news/",
         "enabled": true
       },
       {
@@ -50,8 +50,8 @@
         "enabled": true
       },
       {
-        "name": "Energy Global - Storage",
-        "url": "https://www.energyglobal.com/rss/energyglobal/",
+        "name": "PV Magazine Global",
+        "url": "https://www.pv-magazine.com/feed/",
         "enabled": true
       },
       {
@@ -65,8 +65,8 @@
         "enabled": true
       },
       {
-        "name": "Circularise Blog",
-        "url": "https://www.circularise.com/blogs/rss.xml",
+        "name": "Greentech Media",
+        "url": "https://www.greentechmedia.com/feed/",
         "enabled": true
       }
     ],
