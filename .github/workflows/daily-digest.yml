@@ -28,6 +28,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           DISCORD_WEBHOOK_BESS: ${{ secrets.DISCORD_WEBHOOK_BESS }}
+          DISCORD_WEBHOOK_AI_AGENTS: ${{ secrets.DISCORD_WEBHOOK_AI_AGENTS }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
         run: uv run python run_channels.py
