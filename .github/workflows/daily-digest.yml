@@ -2,7 +2,7 @@ name: Daily Discord Digest
 
 on:
   schedule:
-    - cron: '0 23 * * *'  # 23:00 UTC = 07:00 SGT next day
+    - cron: '0 23 * * 0'  # Weekly: Sunday 23:00 UTC = Monday 07:00 SGT
   workflow_dispatch:       # Manual trigger
 
 jobs:
