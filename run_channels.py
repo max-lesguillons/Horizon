@@ -65,6 +65,7 @@ def build_horizon_config(channel: dict) -> Config:
         subreddit_configs.append(RedditSubredditConfig(
             subreddit=sub["subreddit"],
             sort=sub.get("sort", "hot"),
+            time_filter=sub.get("time_filter", "day"),
             fetch_limit=sub.get("fetch_limit", 25),
             min_score=sub.get("min_score", 10),
             enabled=sub.get("enabled", True),

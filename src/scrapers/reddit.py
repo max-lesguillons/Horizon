@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 import re
 from datetime import datetime, timezone
 from typing import List, Optional
@@ -14,6 +15,8 @@ from ..models import ContentItem, RedditConfig, RedditSubredditConfig, RedditUse
 logger = logging.getLogger(__name__)
 
 REDDIT_BASE = "https://www.reddit.com"
+OAUTH_BASE = "https://oauth.reddit.com"
+TOKEN_URL = "https://www.reddit.com/api/v1/access_token"
 USER_AGENT = "Horizon/1.0 (content aggregator; +https://github.com/thysrael/horizon)"
 
 
@@ -23,10 +26,13 @@ class RedditScraper(BaseScraper):
     def __init__(self, config: RedditConfig, http_client: httpx.AsyncClient):
         super().__init__(config.model_dump(), http_client)
         self.reddit_config = config
+        self._token: Optional[str] = None
 
     async def fetch(self, since: datetime) -> List[ContentItem]:
         if not self.config.get("enabled", True):
             return []
+
+        await self._ensure_token()
 
         tasks = []
         for sub_cfg in self.reddit_config.subreddits:
@@ -53,7 +59,7 @@ class RedditScraper(BaseScraper):
         if cfg.sort in ("top", "controversial"):
             params["t"] = cfg.time_filter
 
-        url = f"{REDDIT_BASE}/r/{cfg.subreddit}/{cfg.sort}.json"
+        url = f"{self._base}/r/{cfg.subreddit}/{cfg.sort}.json"
         data = await self._reddit_get(url, params)
         if not data:
             return []
@@ -66,7 +72,7 @@ class RedditScraper(BaseScraper):
 
     async def _fetch_user(self, cfg: RedditUserConfig, since: datetime) -> List[ContentItem]:
         params = {"limit": min(cfg.fetch_limit, 100), "sort": cfg.sort, "raw_json": 1}
-        url = f"{REDDIT_BASE}/user/{cfg.username}/submitted.json"
+        url = f"{self._base}/user/{cfg.username}/submitted.json"
         data = await self._reddit_get(url, params)
         if not data:
             return []
@@ -123,7 +129,7 @@ class RedditScraper(BaseScraper):
 
     async def _fetch_comments(self, subreddit: str, post_id: str) -> List[dict]:
         fetch_limit = self.reddit_config.fetch_comments
-        url = f"{REDDIT_BASE}/r/{subreddit}/comments/{post_id}.json"
+        url = f"{self._base}/r/{subreddit}/comments/{post_id}.json"
         params = {"limit": fetch_limit, "depth": 1, "sort": "top", "raw_json": 1}
 
         data = await self._reddit_get(url, params)
@@ -194,8 +200,41 @@ class RedditScraper(BaseScraper):
             },
         )
 
+    @property
+    def _base(self) -> str:
+        return OAUTH_BASE if self._token else REDDIT_BASE
+
+    async def _ensure_token(self) -> None:
+        """Fetch an app-only OAuth token when credentials are configured.
+
+        Anonymous www.reddit.com JSON endpoints are blocked from many IPs
+        (including GitHub Actions runners); the official OAuth API is not.
+        Set REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET (a "script" type app
+        from https://www.reddit.com/prefs/apps) to use it. Without
+        credentials this falls back to anonymous access.
+        """
+        if self._token is not None:
+            return
+        client_id = os.environ.get("REDDIT_CLIENT_ID")
+        client_secret = os.environ.get("REDDIT_CLIENT_SECRET")
+        if not client_id or not client_secret:
+            return
+        try:
+            response = await self.client.post(
+                TOKEN_URL,
+                auth=(client_id, client_secret),
+                data={"grant_type": "client_credentials"},
+                headers={"User-Agent": USER_AGENT},
+            )
+            response.raise_for_status()
+            self._token = response.json()["access_token"]
+        except (httpx.HTTPError, KeyError, ValueError) as e:
+            logger.warning("Reddit OAuth token request failed, using anonymous access: %s", e)
+
     async def _reddit_get(self, url: str, params: dict) -> Optional[dict]:
         headers = {"User-Agent": USER_AGENT}
+        if self._token:
+            headers["Authorization"] = f"Bearer {self._token}"
         try:
             response = await self.client.get(url, params=params, headers=headers, follow_redirects=True)
             if response.status_code == 429:
