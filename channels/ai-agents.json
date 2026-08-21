@@ -1,6 +1,6 @@
 {
   "channel_name": "ai-agents-weekly",
-  "description": "AI agents — serious engineering, research, and production practice. Anti-hype.",
+  "description": "Serious AI practitioner content -- local LLMs, agent harnesses, skill/workflow craft. Anti-hype.",
   "discord_webhook_url_env": "DISCORD_WEBHOOK_AI_AGENTS",
 
   "ai": {
@@ -10,27 +10,81 @@
     "languages": ["en"]
   },
 
-  "scoring_prompt": "You are a skeptical senior engineer curating a signal-over-noise digest about AI agents (autonomous LLM systems, tool use, multi-agent orchestration, agent evaluation, and agent infrastructure). You have a strong bias AGAINST hype and marketing. Rate each item 0-10.\n\nReward (high scores):\n- Technical depth: architecture writeups, benchmarks with methodology, ablations, postmortems, incident retrospectives (weight 3x)\n- Peer-reviewed or preprint research with reproducible results and honest limitations (weight 3x)\n- Production engineering: real deployments, cost/latency/reliability numbers, failure modes, eval harnesses, security findings (weight 2x)\n- Open-source releases with substance: framework internals, protocol specs (e.g. MCP), tooling that others can actually use (weight 2x)\n- Rigorous critique or negative results that correct the record (weight 2x)\n\nPenalize (low scores):\n- Funding announcements, valuations, 'AI will change everything' thought-leadership, and vision statements with no technical content\n- Vaporware demos, cherry-picked screenshots, and launch posts with no methodology or numbers\n- Rehashed news, listicles, 'X prompts you must try', and influencer takes\n- Speculation about AGI, hot takes, and Twitter-thread-grade content\n\nScore guidance:\n9-10: Substantial research or a rigorous engineering writeup that changes how a practitioner would build agents\n7-8: Solid technical content with real evidence (benchmarks, code, deployment data)\n5-6: Useful but incremental; some substance, some fluff\n3-4: Mostly news or promotion with thin technical value\n0-2: Hype, marketing, speculation, or off-topic",
+  "scoring_prompt": "You are a skeptical senior engineer curating a signal-over-noise digest for a practitioner who runs LLMs locally and works daily with coding-agent harnesses (Claude Code and similar). You have a strong bias AGAINST hype and marketing. Rate each item 0-10.\n\nCore topics (an item must fit at least one to score above 5):\n1. Local LLM practice: running models locally, inference engines (llama.cpp, Ollama, vLLM, MLX), quantization, hardware sizing, honest local-model benchmarks and comparisons (weight 3x)\n2. Agent harnesses and coding agents: harness design, context management, tool/skill design, MCP, sandboxing, multi-agent orchestration, agent evals (weight 3x)\n3. Craft guides that make practitioners better: writing better skills/prompts/workflows, context engineering, eval harnesses, debugging agent failures, real usage retrospectives (weight 3x)\n4. Research or open-source releases with substance: reproducible results, honest limitations, protocol specs, tooling others can actually use (weight 2x)\n5. Production engineering: real deployments with cost/latency/reliability numbers, failure modes, security findings, postmortems (weight 2x)\n\nPenalize (low scores):\n- Funding announcements, valuations, 'AI will change everything' thought-leadership, vision statements with no technical content\n- Vaporware demos, cherry-picked screenshots, launch posts with no methodology or numbers\n- Rehashed model-release news with no hands-on evaluation, listicles, 'X prompts you must try', influencer takes\n- AGI speculation, hot takes, Twitter-thread-grade content, drama about AI companies\n\nScore guidance:\n9-10: Changes how a practitioner would run local models or build/use agents; rigorous writeup with evidence\n7-8: Solid hands-on content: real benchmarks, working code, a technique you can apply this week\n5-6: On-topic and useful but incremental or thin\n3-4: Mostly news or promotion with little technical value\n0-2: Hype, marketing, speculation, or off-topic",
 
   "sources": {
     "rss": [
       {
-        "name": "PLACEHOLDER — add real feeds later",
-        "url": "https://example.com/feed/",
-        "enabled": false
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": true
+      },
+      {
+        "name": "Hamel Husain",
+        "url": "https://hamel.dev/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "Eugene Yan",
+        "url": "https://eugeneyan.com/rss/",
+        "enabled": true
+      },
+      {
+        "name": "Lilian Weng (Lil'Log)",
+        "url": "https://lilianweng.github.io/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "Interconnects (Nathan Lambert)",
+        "url": "https://www.interconnects.ai/feed",
+        "enabled": true
+      },
+      {
+        "name": "Sebastian Raschka (Ahead of AI)",
+        "url": "https://magazine.sebastianraschka.com/feed",
+        "enabled": true
+      },
+      {
+        "name": "Chip Huyen",
+        "url": "https://huyenchip.com/feed.xml",
+        "enabled": true
+      },
+      {
+        "name": "Hugging Face Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "enabled": true
+      },
+      {
+        "name": "Ollama Blog",
+        "url": "https://ollama.com/blog/rss.xml",
+        "enabled": true
+      },
+      {
+        "name": "Latent Space",
+        "url": "https://www.latent.space/feed",
+        "enabled": true
       }
     ],
 
     "reddit": {
-      "enabled": false,
-      "subreddits": [],
+      "enabled": true,
+      "subreddits": [
+        { "subreddit": "LocalLLaMA", "sort": "top", "time_filter": "week", "fetch_limit": 25, "min_score": 100 },
+        { "subreddit": "LocalLLM", "sort": "top", "time_filter": "week", "fetch_limit": 15, "min_score": 20 },
+        { "subreddit": "ClaudeAI", "sort": "top", "time_filter": "week", "fetch_limit": 15, "min_score": 100 }
+      ],
       "fetch_comments": 3
     },
 
-    "github": [],
+    "github": [
+      { "type": "repo_releases", "owner": "ollama", "repo": "ollama", "enabled": true },
+      { "type": "repo_releases", "owner": "vllm-project", "repo": "vllm", "enabled": true }
+    ],
 
     "hackernews": {
-      "enabled": false
+      "enabled": true,
+      "fetch_top_stories": 30,
+      "min_score": 100
     }
   },
 
