@@ -1,5 +1,6 @@
 """Discord webhook delivery for Horizon channel digests."""
 
+import asyncio
 import os
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
@@ -134,17 +135,32 @@ async def post_to_discord(
         raise ValueError(f"Missing environment variable: {webhook_env}")
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        # Post main embed
-        resp = await client.post(
-            webhook_url,
-            json={"embeds": [embed]},
-        )
-        resp.raise_for_status()
+        await _post_with_retry(client, webhook_url, {"embeds": [embed]})
 
-        # Post enriched items as follow-up messages
+        # Webhooks are limited to ~5 requests per 2 seconds; pace the
+        # follow-ups so a full digest doesn't trip the limit.
         for msg in enriched_messages:
-            resp = await client.post(
-                webhook_url,
-                json={"content": msg},
-            )
+            await asyncio.sleep(0.5)
+            await _post_with_retry(client, webhook_url, {"content": msg})
+
+
+async def _post_with_retry(
+    client: httpx.AsyncClient,
+    webhook_url: str,
+    payload: dict,
+    max_retries: int = 5,
+) -> None:
+    """POST to the webhook, honoring Discord's Retry-After on 429."""
+    for attempt in range(max_retries + 1):
+        resp = await client.post(webhook_url, json=payload)
+        if resp.status_code != 429:
             resp.raise_for_status()
+            return
+        if attempt == max_retries:
+            resp.raise_for_status()
+        # Discord sends Retry-After in seconds (header and JSON body)
+        try:
+            delay = float(resp.headers.get("Retry-After", "2"))
+        except ValueError:
+            delay = 2.0
+        await asyncio.sleep(min(delay, 30.0) + 0.1)
