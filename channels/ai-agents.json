@@ -1,5 +1,5 @@
 {
-  "channel_name": "ai-agents-weekly",
+  "channel_name": "ai-agents",
   "description": "Serious AI practitioner content -- local LLMs, agent harnesses, skill/workflow craft. Anti-hype.",
   "discord_webhook_url_env": "DISCORD_WEBHOOK_AI_AGENTS",
 
@@ -90,7 +90,7 @@
 
   "filtering": {
     "ai_score_threshold": 7.0,
-    "time_window_hours": 168,
+    "time_window_hours": 48,
     "max_items": 15
   },
 
